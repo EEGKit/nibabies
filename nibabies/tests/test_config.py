@@ -64,6 +64,7 @@ def test_config_spaces():
         if sectionname != 'environment':
             section = getattr(config, sectionname)
             section.load(configs, init=False)
+    config.workflow.cifti_output = False
     config.nipype.init()
     config.loggers.init()
     config.init_spaces()
