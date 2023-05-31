@@ -19,7 +19,10 @@ from nipype.interfaces.base import (
     isdefined,
     traits,
 )
-from niworkflows.interfaces.reportlets import base as nrb
+from nireports.interfaces.reporting.base import (
+    ReportingInterface,
+    _SVGReportCapableInputSpec,
+)
 from smriprep.interfaces.freesurfer import ReconAll
 
 LOGGER = logging.getLogger("nipype.interface")
@@ -65,7 +68,7 @@ ABOUT_TEMPLATE = """\t<ul>
 """
 
 
-# TODO: Move to niworkflows
+# TODO: Move to NiReports
 class SummaryOutputSpec(TraitedSpec):
     out_report = File(exists=True, desc="HTML segment containing summary")
 
@@ -297,7 +300,7 @@ class AboutSummary(SummaryInterface):
         )
 
 
-class LabeledHistogramInputSpec(nrb._SVGReportCapableInputSpec):
+class LabeledHistogramInputSpec(_SVGReportCapableInputSpec):
     in_file = traits.File(exists=True, mandatory=True, desc="Image containing values to plot")
     label_file = traits.File(
         exists=True,
@@ -307,7 +310,7 @@ class LabeledHistogramInputSpec(nrb._SVGReportCapableInputSpec):
     xlabel = traits.Str("voxels", usedefault=True, desc="Description of values plotted")
 
 
-class LabeledHistogram(nrb.ReportingInterface):
+class LabeledHistogram(ReportingInterface):
     input_spec = LabeledHistogramInputSpec
 
     def _generate_report(self):

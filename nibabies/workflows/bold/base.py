@@ -1092,7 +1092,7 @@ Non-gridded (surface) resamplings were performed using `mri_vol2surf` (FreeSurfe
         # fmt:on
         return workflow
 
-    from niworkflows.interfaces.reportlets.registration import (
+    from nireports.interfaces.reporting.base import (
         SimpleBeforeAfterRPT as SimpleBeforeAfter,
     )
     from niworkflows.interfaces.utility import KeySelect

@@ -1,8 +1,8 @@
-from itertools import product
 from pathlib import Path
 
-from niworkflows.reports.core import Report as _Report
-from pkg_resources import resource_filename as pkgrf
+from nireports.assembler.report import Report as _Report
+
+from nibabies.utils.misc import get_file
 
 
 class Report(_Report):
@@ -11,7 +11,7 @@ class Report(_Report):
         self,
         out_dir,
         run_uuid,
-        config=None,
+        bootstrap_file=None,
         out_filename=None,
         packagename=None,
         reportlets_dir=None,
@@ -34,9 +34,10 @@ class Report(_Report):
 
         self.out_filename = out_filename or "report.html"
 
-        # Default template from niworkflows
-        self.template_path = Path(pkgrf("niworkflows", "reports/report.tpl"))
-        self._load_config(Path(config or pkgrf("niworkflows", "reports/default.yml")))
+        self.template_path = Path(get_file("nipreps.assembler", "data/report.tpl"))
+        self._load_config(
+            Path(bootstrap_file or get_file("nipreps.assembler", "data/default.yml"))
+        )
         assert self.template_path.exists()
 
     # TODO: Upstream ``Report._load_config`` to niworkflows
