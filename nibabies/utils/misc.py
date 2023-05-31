@@ -2,10 +2,23 @@
 # vi: set ft=python sts=4 ts=4 sw=4 et:
 """Miscellaneous utilities."""
 
+import atexit
+from contextlib import ExitStack
+from functools import cache
 from pathlib import Path
 from typing import Union
 
 from .. import __version__
+
+try:
+    from importlib.resources import as_file, files
+except ImportError:
+    from importlib_resources import as_file, files
+
+
+# To handle managing source files
+exit_stack = ExitStack()
+atexit.register(exit_stack.close)
 
 
 def fix_multi_source_name(in_files):
@@ -117,21 +130,8 @@ def combine_meepi_source(in_files):
     return os.path.join(base, basename)
 
 
+@cache
 def get_file(pkg: str, src_path: Union[str, Path]) -> str:
-    """
-    Get or extract a source file.
-    Assures the file will be available until the lifetime of the current Python process.
-    """
-    import atexit
-    from contextlib import ExitStack
-
-    try:
-        from importlib.resources import as_file, files
-    except ImportError:
-        from importlib_resources import as_file, files
-
-    file_manager = ExitStack()
-    atexit.register(file_manager.close)
-    ref = files(pkg) / str(src_path)
-    fl = file_manager.enter_context(as_file(ref))
-    return str(fl)
+    file_ref = files(pkg) / src_path
+    pathlike = exit_stack.enter_context(as_file(file_ref))
+    return str(pathlike)
